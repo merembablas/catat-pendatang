@@ -3,18 +3,26 @@ package main
 import (
 	"context"
 	"log"
+	"path/filepath"
 
+	"github.com/gin-contrib/multitemplate"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	addressHttpHandler "github.com/merembablas/catat-pendatang/address/delivery/http"
+	addressRepository "github.com/merembablas/catat-pendatang/address/repository"
+	addressUsecase "github.com/merembablas/catat-pendatang/address/usecase"
+	"github.com/merembablas/catat-pendatang/middleware"
+	userHttpHandler "github.com/merembablas/catat-pendatang/user/delivery/http"
+	userRepository "github.com/merembablas/catat-pendatang/user/repository"
+	userUsecase "github.com/merembablas/catat-pendatang/user/usecase"
 	"github.com/spf13/viper"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/merembablas/catat-pendatang/middleware"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 )
 
 func init() {
-	viper.SetConfigFile(".env.example")
+	viper.SetConfigFile(".env")
 	err := viper.ReadInConfig()
 
 	if err != nil {
@@ -24,15 +32,26 @@ func init() {
 
 func main() {
 	mConn := getMongoClient()
+	ur := userRepository.NewMongoUserRepository(mConn)
+	ar := addressRepository.NewMongoAddressRepository(mConn)
+
+	uu := userUsecase.NewUserUsecase(ur)
+	au := addressUsecase.NewAddressUsecase(ar)
 
 	r := gin.Default()
 	middl := middleware.InitMiddleware()
 	store := cookie.NewStore([]byte(viper.GetString("SECRET")))
-	
+
 	r.Use(middl.CORS)
 	r.Static("/assets", viper.GetString("STATIC_PATH"))
 	r.HTMLRender = loadTemplates(viper.GetString("TEMPLATE_PATH"))
 	r.Use(sessions.Sessions("data", store))
+
+	userHttpHandler.NewUserHandler(r, uu)
+	addressHttpHandler.NewAddressHandler(r, au)
+
+	r.Run(":8989")
+
 }
 
 func getMongoClient() *mongo.Client {
