@@ -1,4 +1,4 @@
-package model
+package models
 
 // Village represent village model
 type Village struct {

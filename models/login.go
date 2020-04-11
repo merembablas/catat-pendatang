@@ -1,4 +1,4 @@
-package model
+package models
 
 // Login represent login model
 type Login struct {
