@@ -47,7 +47,7 @@ func main() {
 	r.HTMLRender = loadTemplates(viper.GetString("TEMPLATE_PATH"))
 	r.Use(sessions.Sessions("data", store))
 
-	userHttpHandler.NewUserHandler(r, uu)
+	userHttpHandler.NewUserHandler(r, uu, middl)
 	addressHttpHandler.NewAddressHandler(r, au)
 
 	r.Run(":8989")
