@@ -38,7 +38,6 @@ func NewUserHandler(r *gin.Engine, us user.Usecase, middl *middleware.Middleware
 		api.POST("/user", func(c *gin.Context) {
 			var user models.Register
 			c.BindJSON(&user)
-
 			UserID, err := us.Register(user)
 
 			if err != nil {
@@ -50,6 +49,7 @@ func NewUserHandler(r *gin.Engine, us user.Usecase, middl *middleware.Middleware
 
 		api.GET("/users", middl.APIAuth, func(c *gin.Context) {
 			users, err := us.Users()
+
 			if err != nil {
 				users = []*models.User{}
 			}
@@ -59,6 +59,7 @@ func NewUserHandler(r *gin.Engine, us user.Usecase, middl *middleware.Middleware
 
 		api.GET("/user/:id", middl.APIAuth, func(c *gin.Context) {
 			user, err := us.User(c.Param("id"))
+
 			if err != nil {
 				c.JSON(http.StatusNotFound, gin.H{"data": nil})
 			} else {
@@ -68,6 +69,7 @@ func NewUserHandler(r *gin.Engine, us user.Usecase, middl *middleware.Middleware
 
 		api.GET("/me", middl.APIAuth, func(c *gin.Context) {
 			user, err := us.User(c.MustGet("UserID").(string))
+
 			if err != nil {
 				c.JSON(http.StatusNotFound, gin.H{"data": nil})
 			} else {
