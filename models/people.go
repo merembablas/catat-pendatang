@@ -46,7 +46,7 @@ type People struct {
 	Purpose     string             `json:"purpose"`
 	PeopleCount int                `bson:"people_count" json:"people_count"`
 	People      []PeopleProfile    `bson:"people" json:"people"`
-	ArrivalDate time.Time          `bson:"arrival_date" json:"arrival_date"`
+	ArrivalDate string             `bson:"arrival_date" json:"arrival_date"`
 	Haven       Haven              `json:"haven"`
 	SurveyorID  primitive.ObjectID `bson:"surveyor_id" json:"surveyor_id"`
 	SubmittedAt time.Time          `bson:"submitted_at" json:"submitted_at"`

@@ -13,6 +13,9 @@ import (
 	addressRepository "github.com/merembablas/catat-pendatang/address/repository"
 	addressUsecase "github.com/merembablas/catat-pendatang/address/usecase"
 	"github.com/merembablas/catat-pendatang/middleware"
+	peopleHttpHandler "github.com/merembablas/catat-pendatang/people/delivery/http"
+	peopleRepository "github.com/merembablas/catat-pendatang/people/repository"
+	peopleUsecase "github.com/merembablas/catat-pendatang/people/usecase"
 	userHttpHandler "github.com/merembablas/catat-pendatang/user/delivery/http"
 	userRepository "github.com/merembablas/catat-pendatang/user/repository"
 	userUsecase "github.com/merembablas/catat-pendatang/user/usecase"
@@ -34,9 +37,11 @@ func main() {
 	mConn := getMongoClient()
 	ur := userRepository.NewMongoUserRepository(mConn)
 	ar := addressRepository.NewMongoAddressRepository(mConn)
+	pr := peopleRepository.NewMongoPeopleRepository(mConn)
 
 	uu := userUsecase.NewUserUsecase(ur)
 	au := addressUsecase.NewAddressUsecase(ar)
+	pu := peopleUsecase.NewPeopleUsecase(pr)
 
 	r := gin.Default()
 	middl := middleware.InitMiddleware()
@@ -49,6 +54,7 @@ func main() {
 
 	userHttpHandler.NewUserHandler(r, uu, middl)
 	addressHttpHandler.NewAddressHandler(r, au)
+	peopleHttpHandler.NewPeopleHandler(r, pu, middl)
 
 	r.Run(":8989")
 
